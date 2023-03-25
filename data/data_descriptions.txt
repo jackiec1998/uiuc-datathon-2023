@@ -60,22 +60,3 @@ due_balance_8: due balance 8 months
 snapshot: snapshop/cohort customer belongs to
 mth_code: month of statement
 industry: industry customer belongs to
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

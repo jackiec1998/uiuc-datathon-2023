@@ -1,13 +1,16 @@
-import ray
-ray.init(runtime_env={"env_vars": {"__MODIN_AUTOIMPORT_PANDAS__": "1"}})
-import modin.pandas as pandas
-import charmonium.cache
-import sklearn.model_selection
-import sklearn.base
+try:
+    import ray
+    ray.init(runtime_env={"env_vars": {"__MODIN_AUTOIMPORT_PANDAS__": "1"}})
+    import modin.pandas as pandas
+except ImportError:
+    import pandas
+import functools
 
-charmonium.cache.freeze_config.ignore_all_classes = True
-charmonium.cache.freeze_config.ignore_functions.add(("modin.pandas.io", "read_csv"))
-group = charmonium.cache.MemoizedGroup(size="20GiB")
+# import charmonium.cache
+# charmonium.cache.freeze_config.ignore_all_classes = True
+# charmonium.cache.freeze_config.ignore_functions.add(("modin.pandas.io", "read_csv"))
+# group = charmonium.cache.MemoizedGroup(size="20GiB")
+# @charmonium.cache.memoize(group=group)
 
 hidden_cols = [
     "closed",
@@ -30,8 +33,8 @@ hidden_cols = [
     "writeoff_type_settlement",
     "writeoff_type_repo",
     "writeoff_type_null",
-    "mth_code",
-    "snapshot",
+    # "mth_code",
+    # "snapshot",
 ]
 dtypes = {
     "financial_active": bool,
@@ -105,18 +108,20 @@ dtypes = {
     "industry": "category",
 }
 
-@charmonium.cache.memoize(group=group)
+@functools.cache
 def load_data(train):
     return pandas.read_csv(
         "data/training_data.csv" if train else "data/forecast_starting_data.csv",
         dtype=dtypes,
     ).assign(**{
-        "writeoff_date": lambda df: pandas.to_datetime(df["writeoff_date"], format="%Y-%M-%d"),
-        "snapshot"     : lambda df: pandas.to_datetime(df["snapshot"     ], format="%Y%M"),
-        "mth_code"     : lambda df: pandas.to_datetime(df["mth_code"     ], format="%Y%M"),
+        "writeoff_date": lambda df: pandas.to_datetime(df["writeoff_date"], format="%Y-%m-%d"),
+        "snapshot"     : lambda df: pandas.to_datetime(df["snapshot"     ], format="%Y%m"),
+        "mth_code"     : lambda df: pandas.to_datetime(df["mth_code"     ], format="%Y%m"),
     }).drop(columns=[] if train else hidden_cols)
 
 def evaluate(estimator, scoring="f1"):
+    import sklearn.model_selection
+    import sklearn.base
     training_data = load_data(train=True)
     cross_validator = sklearn.model_selection.StratifiedShuffleSplit(
         n_splits=5,
@@ -147,3 +152,4 @@ def evaluate(estimator, scoring="f1"):
 if __name__ == "__main__":
     training_data = load_data(train=True)
     forecast_data = load_data(train=False)
+    print(pandas.isna(training_data).sum().to_string())
