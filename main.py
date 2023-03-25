@@ -108,7 +108,7 @@ dtypes = {
     "industry": "category",
 }
 
-@functools.cache
+@functools.lru_cache()
 def load_data(train):
     return pandas.read_csv(
         "data/training_data.csv" if train else "data/forecast_starting_data.csv",
