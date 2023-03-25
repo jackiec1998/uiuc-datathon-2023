@@ -140,13 +140,23 @@ def evaluate(estimator, scoring="f1"):
         training_data["charge_off"],
         scoring=scoring,
         cv=cross_validator,
-        n_jobs=-1
+        n_jobs=-1,
     )
     print(scores.mean(), scores.stdev())
     estimator = sklearn.base.clone(estimator)
     estimator.fit(training_data[training_cols], training_data["charge_off"])
     forecast_data = load_data(train=False)
     estimator.predict(forecast_data)
+
+
+def evaluate_survival(survival_estimator):
+    training_data = load_data(train=True)
+    survival_estimator.train(training_data)
+    forecast_data = load_data(train=False)
+    forecast_index = pandas.Index([datetime.datetime(2020, i, 1) for i in range(2, 13)] + [datetime.datetime(2021, 1, 1)])
+    lifetimes = survival_estimator.predict_survival_function(forecast_data, (forecast_index - forecast_index.min()) / pandas.Timedelta(days=30))
+    print(lifetimes.shape, (len(forecast_data), len(forecast_index)))
+    lifetimes.sum(axis=1) * forecast_data.size()
 
 
 if __name__ == "__main__":
