@@ -1,0 +1,81 @@
+Data Definitions:
+financial_active: flag for financial activity
+net_payment_behaviour_tripd: behavior flag for customer payments
+promotion_flag: if customer is on promotion
+variable_rate_index: index for variable apr rate
+account_status_code: status of account
+active_12_mths: if account was active in the last 12 months
+bank_fico_buckets_20: fico score bucket
+charge_off_reason_code: reason for charge off
+mob: month on books
+open_closed_flag: flag for open/closed account
+ever_delinquent_flg: if customer ever delinquent
+nbr_mths_due: number of months customer payment due
+variable_rate_margin: margin of variable apr
+stmt_balance: customer statement balance
+prev_balance: previous customer statement balance
+net_sales: net sales for customer statement
+net_payments: net payments for customer statement
+purchase_active: flag for purchase activity in statement
+credit_limit_amt: credit limit for customer in statement
+credit_limit_pa: credit limit if purchase active
+closed: flag if account is closed
+active: flag if account is active
+charge_off: flag if account was charged off
+charge_off_aged: flag if account was charged off as aged
+charge_off_bk: flag if account was charged off as bankruptcy
+principal_amt: principal amount of customer statement balance
+principal_amt_chrg_off: prinicipal amount of customer statement balance charged off
+total_writeoff_amt: total writeoff amount
+fee_chg_off_reversal_amt: reversal amount of fees for charge off
+net_finance_charge: net charge for finance fees
+non_principal_amount_gross: gross non principal amount in customer statement
+non_principal_amount_net: net non principal amount in customer statement
+non_principal_amount_stmt: statement amount for non principal charges
+aged_writeoff_amt: aged writeoff amount for charge off
+bankruptcy_writeoff_amt: bankruptcy writeoff amount for charge off
+fc_reversals: finance charge reversals in statement
+fee_reversals: fee reversals in statement
+fraud_writeoff_amt: fraud writeoff amount
+other_writeoff_amt: other writeoff amount
+promo_bal_amt: balance amount of promotion
+recovery_amt: amount recovered from charge off
+writeoff_type_bko: writeoff type for bankruptcy
+writeoff_type_fraud_kiting: writeoff type for fraud kiting
+writeoff_type_fraud_synthetic: writeoff type for synthetic fraud
+writeoff_type_deceased: writeoff type for deceased
+writeoff_type_other: writeoff type for other
+writeoff_type_aged: writeoff type for aged
+writeoff_type_settlement: writeoff type for settlement
+writeoff_type_fraud_other: writeoff type for fraud
+writeoff_type_repo: writeoff type for repo
+writeoff_type_null: writeoff type for null
+writeoff_date: writeoff date
+due_account_2: due 2 months
+...
+due_account_8: due 8 months
+due_balance_2: due balance 2 months
+...
+due_balance_8: due balance 8 months
+snapshot: snapshop/cohort customer belongs to
+mth_code: month of statement
+industry: industry customer belongs to
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
