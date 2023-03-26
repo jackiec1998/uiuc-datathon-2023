@@ -13,3 +13,4 @@ conda env create --name datathon --file environment.yml
 conda run --name datathon jupyter notebook survival_numerical_cat_macro.ipynb
 ```
 
+For more information, see our [GitHub repository](https://github.com/jackiec1998/uiuc-datathon-2023).
