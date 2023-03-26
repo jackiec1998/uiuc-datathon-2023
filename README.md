@@ -8,5 +8,5 @@ To reproduce our results, use conda:
 
 ```
 conda env create --name datathon --file environment.yml
-conda run --name datathon jupyter notebook clean-survival.ipynb
+conda run --name datathon jupyter notebook survival_numerical_cat_macro.ipynb
 ```
