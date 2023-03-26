@@ -1,16 +1,10 @@
 try:
     import ray
     ray.init(runtime_env={"env_vars": {"__MODIN_AUTOIMPORT_PANDAS__": "1"}})
-    import modin.pandas as pandas
+    import modin.pandas as big_pandas
 except ImportError:
-    import pandas
-import functools
-
-# import charmonium.cache
-# charmonium.cache.freeze_config.ignore_all_classes = True
-# charmonium.cache.freeze_config.ignore_functions.add(("modin.pandas.io", "read_csv"))
-# group = charmonium.cache.MemoizedGroup(size="20GiB")
-# @charmonium.cache.memoize(group=group)
+    import pandas as big_pandas
+import pandas
 
 hidden_cols = [
     "closed",
@@ -107,19 +101,33 @@ dtypes = {
     "mth_code": str,
     "industry": "category",
 }
+training_cols = [
+    col
+    for col in dtypes.keys()
+    if col not in hidden_cols
+]
 
-@functools.lru_cache()
+
 def load_data(train):
-    return pandas.read_csv(
+    df = big_pandas.read_csv(
         "data/training_data.csv" if train else "data/forecast_starting_data.csv",
         dtype=dtypes,
+    ).drop(
+        columns=[] if train else hidden_cols
     ).assign(**{
-        "writeoff_date": lambda df: pandas.to_datetime(df["writeoff_date"], format="%Y-%m-%d"),
-        "snapshot"     : lambda df: pandas.to_datetime(df["snapshot"     ], format="%Y%m"),
-        "mth_code"     : lambda df: pandas.to_datetime(df["mth_code"     ], format="%Y%m"),
-    }).drop(columns=[] if train else hidden_cols)
+        "writeoff_date": lambda df: big_pandas.to_datetime(df["writeoff_date"], format="%Y-%m-%d"),
+        "snapshot"     : lambda df: big_pandas.to_datetime(df["snapshot"     ], format="%Y%m"),
+        "mth_code"     : lambda df: big_pandas.to_datetime(df["mth_code"     ], format="%Y%m"),
+    }).assign(**{
+        "time_elapsed": lambda df: (df["mth_code"] - df["snapshot"]) / big_pandas.Timedelta(days=30),
+    })
+    if df.__class__.__module__ == "modin.pandas.dataframe":
+        return df._to_pandas()
+    else:
+        return df
 
-def evaluate(estimator, scoring="f1"):
+
+def evaluate_cv(estimator, scoring="f1"):
     import sklearn.model_selection
     import sklearn.base
     training_data = load_data(train=True)
@@ -129,11 +137,6 @@ def evaluate(estimator, scoring="f1"):
         train_size=None,
         random_state=0,
     )
-    training_cols = [
-        col
-        for col in training_data.columns
-        if col not in hidden_cols
-    ]
     scores = sklearn.model_selection.cross_val_score(
         estimator,
         training_data[training_cols],
